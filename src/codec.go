@@ -45,7 +45,7 @@ func CodecByName(name string) (Codec, error) {
 type BinaryCodec struct {}
 
 func (e *BinaryCodec) Name() string {
-  return "dummy"
+  return "raw"
 }
 
 func (e *BinaryCodec) NewEncoder(w io.Writer) io.Writer {
