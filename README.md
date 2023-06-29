@@ -7,13 +7,13 @@ Grab a binary from the `bin/` directory and place it in your `$PATH`, or use the
 
 ### Usage
 
-`renc` decodes `stdin` and re-encodes into `stdout`. It takes two arguments, a decoder and an encoder.
+`renc` decodes `stdin` and re-encodes into `stdout`. It takes one argument in the form `[decoder]:[encoder]` (both parts are optional and default to `raw`).
 
 ```sh
-renc [decoder] [encoder=raw]
+renc [decoder=raw]:[encoder=raw]
 ```
 
-The `decoder` and `encoder` arguments can be:
+The `decoder` and `encoder` parameters can be:
 
 * `raw`: just let bytes through
 * `hex`: hexadecimal
@@ -22,23 +22,22 @@ The `decoder` and `encoder` arguments can be:
 
 ### Examples
 
+Decode raw hex bytes (no re-encoding):
+```
+$ echo -n "48656c6c6f20776f726c6421" | renc hex:
+Hello world!
+```
+
 Decode `base64`, then encode into `hex`:
 
-
-`` `
-$ echo -n "SGVsbG8gd29ybGQh" | renc base64 hex
+```
+$ echo -n "SGVsbG8gd29ybGQh" renc base64:hex
 48656c6c6f20776f726c6421
-```
-
-Decode `hex` into raw bytes (i.e. no re-encoding):
-```
-$ echo -n "48656c6c6f20776f726c6421" | renc hex
-Hello world!
 ```
 
 Encode a binary file to `base64`:
 
 ```
-$ cat data.bin | renc raw base64
+$ cat data.bin | renc :base64
 UHJldHR5IGxhbWUgZWFzdGVyIGVnZywgaHVoPw==
 ```
