@@ -17,11 +17,16 @@ func main() {
 	if err != nil {
 		fail(err)
 	}
+  
+  decoder := cmd.decoder.NewDecoder(os.Stdin)
+  encoder := cmd.encoder.NewEncoder(os.Stdout)
 
-	_, err = io.Copy(cmd.encoder.NewEncoder(os.Stdout), cmd.decoder.NewDecoder(os.Stdin))
+	_, err = io.Copy(encoder, decoder)
 	if err != nil {
 		fail(err)
 	}
+
+  encoder.Close()
 }
 
 func fail(err error) {

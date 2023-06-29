@@ -10,7 +10,7 @@ import (
 
 type Codec interface {
   Name() string
-  NewEncoder(w io.Writer) io.Writer
+  NewEncoder(w io.Writer) io.WriteCloser
   NewDecoder(r io.Reader) io.Reader
 }
 
@@ -48,8 +48,8 @@ func (e *BinaryCodec) Name() string {
   return "raw"
 }
 
-func (e *BinaryCodec) NewEncoder(w io.Writer) io.Writer {
-  return w
+func (e *BinaryCodec) NewEncoder(w io.Writer) io.WriteCloser {
+  return &dummyWriteCloser{w}
 }
 
 func (e *BinaryCodec) NewDecoder(r io.Reader) io.Reader {
@@ -64,8 +64,8 @@ func (e *HexCodec) Name() string {
   return "hex"
 }
 
-func (e *HexCodec) NewEncoder(w io.Writer) io.Writer {
-  return hex.NewEncoder(w)
+func (e *HexCodec) NewEncoder(w io.Writer) io.WriteCloser {
+  return &dummyWriteCloser{hex.NewEncoder(w)}
 }
 
 func (e *HexCodec) NewDecoder(r io.Reader) io.Reader {
@@ -80,7 +80,7 @@ func (e *Base32Codec) Name() string {
   return "base32"
 }
 
-func (e *Base32Codec) NewEncoder(w io.Writer) io.Writer {
+func (e *Base32Codec) NewEncoder(w io.Writer) io.WriteCloser {
   return base32.NewEncoder(base32.StdEncoding, w)
 }
 
@@ -90,17 +90,31 @@ func (e *Base32Codec) NewDecoder(r io.Reader) io.Reader {
 
 // -------------------------------------------------------------------------------------------------
 
-
 type Base64Codec struct {}
 
 func (e *Base64Codec) Name() string {
   return "base64"
 }
 
-func (e *Base64Codec) NewEncoder(w io.Writer) io.Writer {
-  return base32.NewEncoder(base32.StdEncoding, w)
+func (e *Base64Codec) NewEncoder(w io.Writer) io.WriteCloser {
+  return base64.NewEncoder(base64.StdEncoding, w)
 }
 
 func (e *Base64Codec) NewDecoder(r io.Reader) io.Reader {
   return base64.NewDecoder(base64.StdEncoding, r)
 }
+
+// -------------------------------------------------------------------------------------------------
+
+type dummyWriteCloser struct {
+  w io.Writer
+}
+
+func (wc *dummyWriteCloser) Write(p []byte) (n int, err error) {
+  return wc.w.Write(p)
+}
+
+func (wc *dummyWriteCloser) Close() error {
+  return nil
+}
+
