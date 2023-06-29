@@ -4,90 +4,103 @@ import (
 	"encoding/base32"
 	"encoding/base64"
 	"encoding/hex"
+	"fmt"
+	"io"
 )
 
-type Codec struct {
-	name   string
-	encode func([]byte) string
-	decode func(string) ([]byte, error)
-}
-
-func (c *Codec) Name() string {
-	return c.name
-}
-
-func (c *Codec) Encode(data []byte) string {
-	return c.encode(data)
-}
-
-func (c *Codec) Decode(text string) ([]byte, error) {
-	return c.decode(text)
-}
-
-var (
-	Ascii  = &Codec{"ascii", encodeAscii, decodeAscii}
-	Hex    = &Codec{"hex", hex.EncodeToString, hex.DecodeString}
-	Base32 = &Codec{"base32", base32.StdEncoding.EncodeToString, decodeAnyBase32}
-	Base64 = &Codec{"base64", base64.StdEncoding.EncodeToString, decodeAnyBase64}
-)
-
-// -------------------------------------------------------------------------------------------------
-
-var codecByName = map[string]*Codec{
-	Ascii.name:  Ascii,
-	Hex.name:    Hex,
-	Base32.name: Base32,
-	Base64.name: Base64,
-}
-
-func ByName(name string) *Codec {
-	return codecByName[name]
+type Codec interface {
+  Name() string
+  NewEncoder(w io.Writer) io.Writer
+  NewDecoder(r io.Reader) io.Reader
 }
 
 // -------------------------------------------------------------------------------------------------
 
-func encodeAscii(data []byte) string {
-	return string(data)
+var codecs = []Codec{
+  &BinaryCodec{},
+  &HexCodec{},
+  &Base32Codec{},
+  &Base64Codec{},
 }
 
-func decodeAscii(text string) ([]byte, error) {
-	return []byte(text), nil
+var codecsByName = map[string]Codec{}
+
+func CodecByName(name string) (Codec, error) {
+  if len(codecsByName) == 0 {
+    for _, codec := range codecs {
+      codecsByName[codec.Name()] = codec
+    }
+  }
+
+  codec, ok := codecsByName[name]
+  if !ok {
+    return nil, fmt.Errorf("no such codec: %s", name)
+  }
+
+  return codec, nil
 }
 
-func decodeAnyBase32(text string) ([]byte, error) {
-	data, stdErr := base32.StdEncoding.DecodeString(text)
-	if stdErr == nil {
-		return data, nil
-	}
+// -------------------------------------------------------------------------------------------------
 
-	data, err := base32.HexEncoding.DecodeString(text)
-	if err == nil {
-		return data, nil
-	}
+type BinaryCodec struct {}
 
-	return nil, stdErr
+func (e *BinaryCodec) Name() string {
+  return "dummy"
 }
 
-func decodeAnyBase64(text string) ([]byte, error) {
-	data, stdErr := base64.StdEncoding.DecodeString(text)
-	if stdErr == nil {
-		return data, nil
-	}
+func (e *BinaryCodec) NewEncoder(w io.Writer) io.Writer {
+  return w
+}
 
-	data, err := base64.RawStdEncoding.DecodeString(text)
-	if err == nil {
-		return data, nil
-	}
+func (e *BinaryCodec) NewDecoder(r io.Reader) io.Reader {
+  return r
+}
 
-	data, err = base64.URLEncoding.DecodeString(text)
-	if err == nil {
-		return data, nil
-	}
+// -------------------------------------------------------------------------------------------------
 
-	data, err = base64.RawURLEncoding.DecodeString(text)
-	if err == nil {
-		return data, nil
-	}
+type HexCodec struct {}
 
-	return nil, stdErr
+func (e *HexCodec) Name() string {
+  return "hex"
+}
+
+func (e *HexCodec) NewEncoder(w io.Writer) io.Writer {
+  return hex.NewEncoder(w)
+}
+
+func (e *HexCodec) NewDecoder(r io.Reader) io.Reader {
+  return hex.NewDecoder(r)
+}
+
+// -------------------------------------------------------------------------------------------------
+
+type Base32Codec struct {}
+
+func (e *Base32Codec) Name() string {
+  return "base32"
+}
+
+func (e *Base32Codec) NewEncoder(w io.Writer) io.Writer {
+  return base32.NewEncoder(base32.StdEncoding, w)
+}
+
+func (e *Base32Codec) NewDecoder(r io.Reader) io.Reader {
+  return base32.NewDecoder(base32.StdEncoding, r)
+}
+
+// -------------------------------------------------------------------------------------------------
+
+
+type Base64Codec struct {}
+
+func (e *Base64Codec) Name() string {
+  return "base64"
+}
+
+func (e *Base64Codec) NewEncoder(w io.Writer) io.Writer {
+  return base32.NewEncoder(base32.StdEncoding, w)
+}
+
+func (e *Base64Codec) NewDecoder(r io.Reader) io.Reader {
+  return base64.NewDecoder(base64.StdEncoding, r)
 }
