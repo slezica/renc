@@ -30,9 +30,9 @@ func ParseCommand(raw_args []string) (*Command, error) {
 	}
 
 	codecNames, err := parseCodecPair(args[0])
-  if err != nil {
-    return nil, fmt.Errorf("invalid argument: %w", err)
-  }
+	if err != nil {
+		return nil, fmt.Errorf("invalid argument: %w", err)
+	}
 
 	decoder, err = CodecByName(codecNames[0])
 	if err != nil {
