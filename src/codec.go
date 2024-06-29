@@ -26,6 +26,10 @@ var codecs = []Codec{
 var codecsByName = map[string]Codec{}
 
 func CodecByName(name string) (Codec, error) {
+  if len(name) == 0 {
+    name = "raw"
+  }
+
 	if len(codecsByName) == 0 {
 		for _, codec := range codecs {
 			codecsByName[codec.Name()] = codec

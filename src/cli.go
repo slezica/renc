@@ -25,6 +25,7 @@ func ParseCommand(raw_args []string) (*Command, error) {
 
 	if len(args) == 0 {
 		return nil, fmt.Errorf("no [encoder]:[decoder] argument")
+
 	} else if len(args) > 1 {
 		return nil, fmt.Errorf("too many arguments. Did you mean '[encoder]:[decoder]' in a single argument?")
 	}
