@@ -66,7 +66,7 @@ func parseCodecPair(arg string) ([]string, error) {
 	return names, nil
 }
 
-var usage = `Usage: renc [decoder=raw] [encoder=raw]`
+var usage = `Usage: renc [decoder=raw]:[encoder=raw]`
 var help = `
 Available encoders/decoders:
   - raw
