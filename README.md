@@ -1,43 +1,57 @@
+# renc
 
-`renc` is a command-line tool to decode/encode streams using a variety of encodings.
+Command-line tool to encode and decode streams in a variety of common encodings.
 
-### Installation
+## Installation
 
-Grab a binary from the `bin/` directory and place it in your `$PATH`, or use the `Makefile`.
+Grab a binary from `/bin` and place it in your `$PATH`, or run it with `go run`, or build it yourself
+with `go build`.
 
-### Usage
+## Usage
 
-`renc` decodes `stdin` and re-encodes into `stdout`. It takes one argument in the form `[decoder]:[encoder]` (both parts are optional and default to `raw`).
+`renc` reads from `stdin`, decodes, encodes and writes to `stdout`. You can specify the encodings
+using this syntax:
 
-```sh
-renc [decoder=raw]:[encoder=raw]
+```bash
+renc [decode]:[encode]
 ```
 
-The `decoder` and `encoder` parameters can be:
+For example:
 
-* `raw`: just let bytes through
-* `hex`: hexadecimal
-* `base32`: standard base32
-* `base64`: standard base64
+```bash
+cat ./base64file | renc base64:hex # re-encodes base64 as hex
+```
+
+Currently supported encodings are `raw`, `hex`, `base32` and `base64`. If either encoding is
+omitted, it defaults to `raw`. For example:
+
+```bash
+renc :hex
+renc raw:hex # same thing
+```
+```bash
+renc base64:    # same thing
+renc base64:raw # same thing
+```
 
 ### Examples
 
-Decode raw hex bytes (no re-encoding):
-```
+Decode hex to raw bytes (no re-encoding):
+```bash
 $ echo -n "48656c6c6f20776f726c6421" | renc hex:
 Hello world!
 ```
 
-Decode `base64`, then encode into `hex`:
+Decode `base64`, then encode in `hex`:
 
-```
-$ echo -n "SGVsbG8gd29ybGQh" renc base64:hex
+```bash
+$ echo -n "SGVsbG8gd29ybGQh" | renc base64:hex
 48656c6c6f20776f726c6421
 ```
 
 Encode a binary file to `base64`:
 
-```
+```bash
 $ cat data.bin | renc :base64
 UHJldHR5IGxhbWUgZWFzdGVyIGVnZywgaHVoPw==
 ```
