@@ -30,7 +30,7 @@ renc :hex
 renc raw:hex # same thing
 ```
 ```bash
-renc base64:    # same thing
+renc base64:
 renc base64:raw # same thing
 ```
 
