@@ -9,7 +9,7 @@ can use `make build-all` to cross-compile for all platforms.
 
 ## Usage
 
-`renc` reads from `stdin`, decodes, encodes and writes to `stdout`. You can specify the encodings
+`renc` reads from `stdin`, decodes and/or encodes, and writes to `stdout`. You can specify the encodings
 using this syntax:
 
 ```bash
