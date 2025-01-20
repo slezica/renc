@@ -55,3 +55,9 @@ Encode a binary file to `base64`:
 $ cat data.bin | renc :base64
 UHJldHR5IGxhbWUgZWFzdGVyIGVnZywgaHVoPw==
 ```
+
+## Future Work
+
+* Support more encodings
+* Support (de)compression?
+* Option to trim newlines or even whitespace?
