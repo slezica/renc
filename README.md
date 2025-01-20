@@ -4,8 +4,8 @@ Command-line tool to encode and decode streams in a variety of common encodings.
 
 ## Installation
 
-Grab a binary from `/bin` and place it in your `$PATH`, or run it with `go run`, or build it yourself
-with `go build`.
+Grab a binary from `/bin` and place it in your `$PATH`, or build it yourself with `make build`. You
+can use `make build-all` to cross-compile for all platforms.
 
 ## Usage
 
